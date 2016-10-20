@@ -8,6 +8,6 @@
 
 ###效果图如下：
 
-![Alt text](/Users/caonongyun/Documents/iOS-New/SideViewController/SideViewController.gif)
+![SideViewController.gif](SideViewController.gif)
 
 =======
