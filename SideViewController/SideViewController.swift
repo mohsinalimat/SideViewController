@@ -294,6 +294,7 @@ class SideViewController: UIViewController,UIGestureRecognizerDelegate {
             self.isCloseLeftSide = true
             self.isCloseRightSide = true
             self.rightView.hidden = false
+            self.maskView.removeFromSuperview()
         }
     }
     
