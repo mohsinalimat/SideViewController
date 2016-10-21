@@ -21,11 +21,11 @@ class SideViewController: UIViewController,UIGestureRecognizerDelegate {
     /**
      *  右侧视图控制器相对于容器视图的比例,1.0不进行缩放
      */
-    var rightViewControllerScale:CGFloat = 1.0
+    var rightViewControllerScale:CGFloat = 0.75
     /**
      *  左侧视图控制器相对于容器视图的比例,1.0不进行缩放
      */
-    var leftViewControllerScale:CGFloat = 1.0
+    var leftViewControllerScale:CGFloat = 0.75
     /**
      *  右侧视图控制器相对于容器视图的 x 方向的偏移量比例，1.0则为完全偏移
      */
@@ -34,11 +34,11 @@ class SideViewController: UIViewController,UIGestureRecognizerDelegate {
     /**
      *  左侧视图控制器相对于容器视图的 x 方向的偏移量比例，1.0则为完全偏移
      */
-    var leftOffSetXScale:CGFloat = 0.2
+    var leftOffSetXScale:CGFloat = 0.8
     /**
      *  侧滑菜单加载时间
      */
-    var animateDuration = 0.35
+    var animateDuration = 0.25
     
     /// 是否右侧边栏处于关闭状态
     var isCloseRightSide:Bool = true
@@ -114,6 +114,7 @@ class SideViewController: UIViewController,UIGestureRecognizerDelegate {
             }else if !isCloseRightSide {
                 rightView.hidden = false
             }
+            
             updateContentViewShadow()
         }
         
@@ -160,8 +161,12 @@ class SideViewController: UIViewController,UIGestureRecognizerDelegate {
                 if offSetX < -leftOffSetXScale*ScreenWidth - bounchesX {
                     return
                 }
+                //缩放实现
+                let scale:CGFloat = leftViewControllerScale + abs(offSetX)/(leftOffSetXScale*ScreenWidth)*(1 - leftViewControllerScale)
+                let scaleT = CGAffineTransformMakeScale(scale, scale)
                 let transT = CGAffineTransformMakeTranslation(offSetX + leftOffSetXScale*ScreenWidth, 0)
-                self.contentView.transform = transT
+                let conT = CGAffineTransformConcat(transT, scaleT)
+                self.contentView.transform = conT
 
             }else if !isCloseRightSide {
                 if offSetX < -bounchesX{
@@ -170,16 +175,22 @@ class SideViewController: UIViewController,UIGestureRecognizerDelegate {
                 if offSetX > rightOffSetXScale*ScreenWidth + bounchesX {
                     return
                 }
+                pan.setTranslation(CGPointMake(offSetX, translation.y), inView: self.contentView)
                 let transT = CGAffineTransformMakeTranslation(offSetX + -rightOffSetXScale*ScreenWidth, 0)
                 //目前只考虑了平移的问题，缩放后面慢慢加上
-                let scaleT = CGAffineTransformMakeScale(offSetX/ScreenWidth, leftViewControllerScale)
+                let scale:CGFloat = rightViewControllerScale + abs(offSetX)/(rightOffSetXScale*ScreenWidth)*(1 - rightViewControllerScale)
+                let scaleT = CGAffineTransformMakeScale(scale, scale)
                 let conT = CGAffineTransformConcat(transT, scaleT)
-                self.contentView.transform = transT
+                self.contentView.transform = conT
 
             }else if horizonalXSide == .Left {
                 /**
                  *  左右侧边栏都处于关闭状态
                  */
+                //缩放实现
+                let scale:CGFloat = 1 - abs(offSetX)/(leftOffSetXScale*ScreenWidth)*(1 - leftViewControllerScale)
+                let scaleT = CGAffineTransformMakeScale(scale, scale)
+                
                 if offSetX < -bounchesX {
                     return
                 }
@@ -187,8 +198,14 @@ class SideViewController: UIViewController,UIGestureRecognizerDelegate {
                     return
                 }
                 let transT = CGAffineTransformMakeTranslation(offSetX, 0)
-                self.contentView.transform = transT
+                let conT = CGAffineTransformConcat(transT, scaleT)
+
+
+                self.contentView.transform = conT
             }else if horizonalXSide == .Right {
+                //缩放实现
+                let scale:CGFloat = 1 - abs(offSetX)/(rightOffSetXScale*ScreenWidth)*(1 - rightViewControllerScale)
+                let scaleT = CGAffineTransformMakeScale(scale, scale)
                 if offSetX  > bounchesX  {
                     return
                 }
@@ -196,8 +213,12 @@ class SideViewController: UIViewController,UIGestureRecognizerDelegate {
                     return
                 }
                 let transT = CGAffineTransformMakeTranslation(offSetX, 0)
-                self.contentView.transform = transT
+                let conT = CGAffineTransformConcat(transT, scaleT)
+
+                self.contentView.transform = conT
             }
+            
+           
         }
     }
     
